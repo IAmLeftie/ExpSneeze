@@ -11,6 +11,7 @@ using UnityEngine;
 namespace ModNamespace
 {
     [BepInPlugin(ModGUID, ModName, ModVersion)]
+    [BepInDependency("net.cucorelib", BepInDependency.DependencyFlags.HardDependency)]
     public class Plugin : BaseUnityPlugin
     {
         public const string ModGUID = "lefty.expsneeze";
