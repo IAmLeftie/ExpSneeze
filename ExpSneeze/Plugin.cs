@@ -13,9 +13,9 @@ namespace ModNamespace
     [BepInPlugin(ModGUID, ModName, ModVersion)]
     public class Plugin : BaseUnityPlugin
     {
-        public const string ModGUID = "modauthor.modname";
-        public const string ModName = "ModName";
-        public const string ModVersion = "0.0.0";
+        public const string ModGUID = "lefty.expsneeze";
+        public const string ModName = "ExpSneeze";
+        public const string ModVersion = "1.0.0";
 
         internal static new ManualLogSource Logger;
         private readonly Harmony _harmony = new(ModGUID);
