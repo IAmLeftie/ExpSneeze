@@ -183,7 +183,7 @@ namespace ExpSneeze
             {
                 SneezeStatus status = __instance.GetStatus<SneezeStatus>();
                 status.SneezeTime += atk.cooldown * 1f;
-                Plugin.Logger.LogInfo($"SneezeTime: {status.SneezeTime}");
+                //Plugin.Logger.LogInfo($"SneezeTime: {status.SneezeTime}");
             }
         }
     }
