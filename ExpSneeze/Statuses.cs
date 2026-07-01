@@ -17,6 +17,8 @@ namespace ExpSneeze
         public float SneezeCooldown;
         public readonly AudioClip audioClip = AssetLoader.LoadEmbeddedAudio("sneeze.wav");
         public AudioSource audioSource;
+        public readonly Sprite moodleSprite = AssetLoader.LoadEmbeddedSprite("sneeze.png");
+        public bool WarningDialogueDone = false;
     }
 
     [HarmonyPatch(typeof(PlayerCamera), "Update")]
@@ -39,10 +41,55 @@ namespace ExpSneeze
                 status.SneezeTime = 0f;
                 status.Sneezing = false;
                 status.SneezeCooldown = 0f;
-                return;
             }
 
-            status.SneezeTime += Time.deltaTime;
+            if (!__instance.body.sleeping && !__instance.body.vomiter.vomiting && !__instance.body.harmer.harming && !__instance.body.inCardiacArrest && __instance.body.respiratoryRate > 0f)
+            {
+                status.SneezeTime += Time.deltaTime;
+            }
+            if (status.SneezeTime >= 295f && status.SneezeTime < 298f)
+            {
+                MoodleRegistry.AddMoodle(
+                    1,
+                    status.moodleSprite,
+                    LocaleRegistry.Get("other", "expsneeze.status.sneeze", "About to sneeze"),
+                    LocaleRegistry.Get("other", "expsneeze.status.sneezedsc", "Buildup of foreign particles in your nostrils has irritated your nose. Forceful nasal expulsion imminent. In other words, it's gonna blow!"),
+                    holdSeconds: 0f
+                );
+            }
+            if (status.SneezeTime >= 298f && status.SneezeTime < 299f)
+            {
+                if (!status.WarningDialogueDone)
+                {
+                    string[] rand = [
+                        LocaleRegistry.Get("other", "expsneeze.dialogue.presneeze1", "Ah...!"),
+                        LocaleRegistry.Get("other", "expsneeze.dialogue.presneeze2", "Hh..."),
+                        LocaleRegistry.Get("other", "expsneeze.dialogue.presneeze3", "I'm gonna...!"),
+                        LocaleRegistry.Get("other", "expsneeze.dialogue.presneeze4", "Uh oh...!"),
+                        LocaleRegistry.Get("other", "expsneeze.dialogue.presneeze5", "*sharp inhale*"),
+                    ];
+                    __instance.body.talker.Talk(rand[UnityEngine.Random.Range(0,5)], force: true, resetTalkTimer: true);
+                    status.WarningDialogueDone = true;
+                }
+                MoodleRegistry.AddMoodle(
+                    2,
+                    status.moodleSprite,
+                    LocaleRegistry.Get("other", "expsneeze.status.sneeze", "About to sneeze"),
+                    LocaleRegistry.Get("other", "expsneeze.status.sneezedsc", "Buildup of foreign particles in your nostrils has irritated your nose. Forceful nasal expulsion imminent. In other words, it's gonna blow!"),
+                    holdSeconds: 0f
+                );
+            }
+            if (status.SneezeTime >= 299f && status.SneezeTime < 300f)
+            {
+                MoodleRegistry.AddMoodle(
+                    3,
+                    status.moodleSprite,
+                    LocaleRegistry.Get("other", "expsneeze.status.sneeze", "About to sneeze"),
+                    LocaleRegistry.Get("other", "expsneeze.status.sneezedsc", "Buildup of foreign particles in your nostrils has irritated your nose. Forceful nasal expulsion imminent. In other words, it's gonna blow!"),
+                    critical: true,
+                    holdSeconds: 0f
+                );
+            }
 
             if (status.SneezeTime >= 300f)
             {
@@ -57,6 +104,13 @@ namespace ExpSneeze
                     if (__instance.body.consciousness <= 72f)
                     {
                         //Plugin.Logger.LogInfo("ACHOO!");
+                        string[] rand = [
+                            LocaleRegistry.Get("other", "expsneeze.dialogue.sneeze1", "ACHOO!"),
+                            LocaleRegistry.Get("other", "expsneeze.dialogue.sneeze2", "CHOO!"),
+                            LocaleRegistry.Get("other", "expsneeze.dialogue.sneeze3", "CHU!")
+                        ];
+
+                        __instance.body.talker.Talk(rand[UnityEngine.Random.Range(0,3)], force: true, resetTalkTimer: true);
                         status.audioSource.pitch = UnityEngine.Random.Range(0.9f, 1.1f);
                         status.audioSource.Play();
                         if (UnityEngine.Random.Range(1, 11) == 1)
@@ -87,6 +141,18 @@ namespace ExpSneeze
                 else
                 {
                     __instance.body.consciousness = Mathf.Min(90f, __instance.body.consciousness + 0.58f);
+                    if (status.WarningDialogueDone)
+                    {
+                        string[] rand = [
+                            LocaleRegistry.Get("other", "expsneeze.dialogue.sneezeend1", "Excuse me..."),
+                            LocaleRegistry.Get("other", "expsneeze.dialogue.sneezeend2", "Bless you..."),
+                            LocaleRegistry.Get("other", "expsneeze.dialogue.sneezeend3", "Fucking hell..."),
+                            LocaleRegistry.Get("other", "expsneeze.dialogue.sneezeend4", "That one hurt. Ow."),
+                        ];
+
+                        status.WarningDialogueDone = false;
+                        __instance.body.talker.TalkDelayed(UnityEngine.Random.Range(1f, 2.5f), rand[UnityEngine.Random.Range(0,4)], force: true, resetTalkTimer: true);
+                    }
                 }
                     status.SneezeCooldown -= Time.deltaTime;
             }
@@ -117,7 +183,7 @@ namespace ExpSneeze
             {
                 SneezeStatus status = __instance.GetStatus<SneezeStatus>();
                 status.SneezeTime += atk.cooldown * 1f;
-                //Plugin.Logger.LogInfo($"SneezeTime: {status.SneezeTime}");
+                Plugin.Logger.LogInfo($"SneezeTime: {status.SneezeTime}");
             }
         }
     }

@@ -17,10 +17,12 @@
   <Import Project="../vars.targets" />
 
   <ItemGroup>
+    <None Remove="sneeze.png" />
     <None Remove="sneeze.wav" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="sneeze.png" />
     <EmbeddedResource Include="sneeze.wav" />
   </ItemGroup>
 
