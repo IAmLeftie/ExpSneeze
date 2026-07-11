@@ -20,7 +20,7 @@ namespace ModNamespace
     {
         public const string ModGUID = "lefty.expsneeze";
         public const string ModName = "ExpSneeze";
-        public const string ModVersion = "1.3.0";
+        public const string ModVersion = "1.3.1";
 
         internal static new ManualLogSource Logger;
         private readonly Harmony _harmony = new(ModGUID);

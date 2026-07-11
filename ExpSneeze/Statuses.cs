@@ -170,7 +170,7 @@ namespace ExpSneeze
                         ];
 
                         status.WarningDialogueDone = false;
-                        __instance.body.talker.TalkDelayed(UnityEngine.Random.Range(1f, 2.5f), rand[UnityEngine.Random.Range(0,4)], force: true, resetTalkTimer: true);
+                        __instance.body.talker.TalkDelayed(UnityEngine.Random.Range(1f, 2.5f), rand[UnityEngine.Random.Range(0,8)], force: true, resetTalkTimer: true);
                         __instance.body.talker.PromptTraderResponse("sneeze");
                     }
                 }
