@@ -2,7 +2,6 @@
 using CUCoreLib.Helpers;
 using CUCoreLib.Registries;
 using HarmonyLib;
-using ModNamespace;
 using System;
 using UnityEngine;
 
@@ -38,16 +37,23 @@ namespace ExpSneeze
                 status.audioSource.volume = (float)Settings.GetSetting<SettingFloat>("mastervolume").GetValue();
             }
 
-            if (__instance.body.HasWearable("dustmask"))
+            if (__instance.body.HasWearable("dustmask") || __instance.body.HasWearable("scubadivinggear"))
             {
                 status.SneezeTime = 0f;
                 status.Sneezing = false;
                 status.SneezeCooldown = 0f;
             }
 
-            if (!__instance.body.sleeping && !__instance.body.vomiter.vomiting && !__instance.body.harmer.harming && !__instance.body.inCardiacArrest && __instance.body.respiratoryRate > 0f)
+            if (!__instance.body.sleeping && !__instance.body.vomiter.vomiting && !__instance.body.harmer.harming && !__instance.body.inCardiacArrest && __instance.body.respiratoryRate > 0f && __instance.body.conscious && __instance.body.LimbByName("Head").muscleHealth > 48f)
             {
-                status.SneezeTime += Time.deltaTime;
+                if (__instance.body.HasWearable("makeshiftmask"))
+                {
+                    status.SneezeTime += Time.deltaTime * 0.33f;
+                }
+                else
+                {
+                    status.SneezeTime += Time.deltaTime;
+                }
             }
             if (status.SneezeTime >= status.SneezeTimeMax - 5f && status.SneezeTime < status.SneezeTimeMax - 2f)
             {
@@ -169,8 +175,14 @@ namespace ExpSneeze
                             LocaleRegistry.Get("other", "expsneeze.dialogue.sneezeend8", "*sniff*"),
                         ];
 
+                        int rng = UnityEngine.Random.Range(0, 8);
+                        while (rng == 6 && (__instance.body.HasWearable("makeshiftmask") || __instance.body.HasWearable("dustmask") || __instance.body.HasWearable("scubadivinggear")))
+                        {
+                            rng = UnityEngine.Random.Range(0, 8);
+                        }
+
                         status.WarningDialogueDone = false;
-                        __instance.body.talker.TalkDelayed(UnityEngine.Random.Range(1f, 2.5f), rand[UnityEngine.Random.Range(0,8)], force: true, resetTalkTimer: true);
+                        __instance.body.talker.TalkDelayed(UnityEngine.Random.Range(1f, 2.5f), rand[rng], force: true, resetTalkTimer: true);
                         __instance.body.talker.PromptTraderResponse("sneeze");
                     }
                 }
@@ -203,7 +215,14 @@ namespace ExpSneeze
             {
                 SneezeStatus status = __instance.GetStatus<SneezeStatus>();
                 if (status.SneezeTime >= status.SneezeTimeMax - 5f) return;
-                status.SneezeTime += atk.cooldown / 2f;
+                if (__instance.HasWearable("makeshiftmask"))
+                {
+                    status.SneezeTime += atk.cooldown / 4f;
+                }
+                else
+                {
+                    status.SneezeTime += atk.cooldown / 2f;
+                }
                 if (status.SneezeTime > status.SneezeTimeMax - 5f) status.SneezeTime = status.SneezeTimeMax - 5f;
                 //Plugin.Logger.LogInfo($"SneezeTime: {status.SneezeTime}");
             }

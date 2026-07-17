@@ -12,7 +12,7 @@ using HarmonyLib;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
 
-namespace ModNamespace
+namespace ExpSneeze
 {
     [BepInPlugin(ModGUID, ModName, ModVersion)]
     [BepInDependency("net.cucorelib", BepInDependency.DependencyFlags.HardDependency)]
@@ -20,19 +20,25 @@ namespace ModNamespace
     {
         public const string ModGUID = "lefty.expsneeze";
         public const string ModName = "ExpSneeze";
-        public const string ModVersion = "1.3.1";
+        public const string ModVersion = "1.4.0";
 
         internal static new ManualLogSource Logger;
         private readonly Harmony _harmony = new(ModGUID);
         public static Plugin Instance { get; private set; } = null!;
+
+        public static Sprite makeshiftMaskSprite;
 
         void Awake()
         {
             Logger = base.Logger;
             Instance = this;
 
+            makeshiftMaskSprite = AssetLoader.LoadSpriteFromPluginFolder(this, "Images/makeshiftmask.png");
+
             _harmony.PatchAll();
             RegisterConsoleCommands();
+            ExpSneeze.Items.RegisterItems();
+            ExpSneeze.Items.RegisterRecipes();
 
             ModOptionsRegistry.Register(ModOptionDefinition.Float("expsneeze.sneezetimemax",
                 LocaleRegistry.Get("other", "gamesetexpsneeze.sneezetimemax", "Time between sneezes"),
