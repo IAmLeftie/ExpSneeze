@@ -33,7 +33,6 @@ namespace ExpSneeze
                 rec = new Recognition(1),
                 scaleWeightWithCondition = false,
                 qualities = new List<CraftingQuality>(["rippable"]),
-                DropPool = DropPool.Corpse | DropPool.AllTraders | DropPool.MedicalCrate | DropPool.ContainerCrate | DropPool.CapsuleContainer
             }, Plugin.makeshiftMaskSprite);
         }
 
